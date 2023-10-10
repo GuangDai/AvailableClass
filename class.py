@@ -38,7 +38,7 @@ get_empty_classroom_url = 'http://jwglweixin.bupt.edu.cn/bjyddx/todayClassrooms?
 
 userNo = os.getenv('USER_NO')
 encoded_pwd = os.getenv('ENCODED_PWD')
-chatId = os.getenv('CHAT_IDZZ')
+chatId = os.getenv('CHAT_ID')
 token = None
 
 
