@@ -1,0 +1,30 @@
+name: Run Python Script
+
+on:
+  schedule:
+    - cron: '10 16 * * *'
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install python-telegram-bot sanic matplotlib numpy
+
+    - name: Run Python script
+      run: python your_script_name.py
+      env:  # 设置环境变量
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        USER_NO: ${{ secrets.USER_NO }}
+        ENCODED_PWD: ${{ secrets.ENCODED_PWD }}
+        CHAT_ID: ${{secrets.CHAT_ID}}
