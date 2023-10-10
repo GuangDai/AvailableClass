@@ -460,8 +460,6 @@ if __name__ == "__main__":
         pass
     sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
     print(len(sorted_results))
-    for i in sorted_results:
-        print(f"优先级：{i[0]}   教室为:{i[1]}")
     sorted_results = list(reversed(sorted_results))[0:min(70,len(sorted_results)-1)]
     generate_image(sorted_results)
     loop = asyncio.get_event_loop()
