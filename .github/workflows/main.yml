@@ -23,7 +23,7 @@ jobs:
         pip install python-telegram-bot sanic matplotlib numpy
 
     - name: Run Python script
-      run: python your_script_name.py
+      run: python class.py
       env:  # 设置环境变量
         TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
         USER_NO: ${{ secrets.USER_NO }}
