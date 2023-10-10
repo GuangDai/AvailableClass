@@ -314,7 +314,7 @@ def calculate_cost(a, b):
     if a_building != b_building:
         return 10 + a_stair + b_stair + 1
     if a_stair == 9 or b_stair == 9:
-        return 10
+        return 15
     if a_stair != b_stair:
         return abs(a_stair - b_stair) + 1
 
