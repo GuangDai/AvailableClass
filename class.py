@@ -334,7 +334,7 @@ def num_to_class(num_list):
     return temp_class_list
 
 
-def check_classroom(classrooms_list, exclude_set, num_building):
+def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
     n = len(classrooms_list)
     class_list_to_num = []
     for i in class_list:
@@ -359,7 +359,6 @@ def check_classroom(classrooms_list, exclude_set, num_building):
         class_list_to_num.append(temp_list)
     colors = class_list_to_num
     result = []
-    excluded_path = []
     for i in range(1, 8192):
         for j in colors:
             random.shuffle(j)
@@ -369,7 +368,7 @@ def check_classroom(classrooms_list, exclude_set, num_building):
             result.append([second_best_cost, num_to_class(color_path)])
         except:
             continue
-    return result
+    return result, excluded_path
 
 
 def remove_duplicates(data):
@@ -438,13 +437,20 @@ if __name__ == "__main__":
     print("Collect Info Done")
     exclude_classroom_set = {4414, 4421}
     results = []
+    excluded_path = []
 
 
-    results.extend(check_classroom(class_list, exclude_classroom_set, 3))
+    temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 3, excluded_path)
+    results.extend(temp_result)
+    excluded_path.extend(temp_excluded_path)
+    
+    temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 4, excluded_path)
+    results.extend(temp_result)
+    excluded_path.extend(temp_excluded_path)
 
-    results.extend(check_classroom(class_list, exclude_classroom_set, 4))
-
-    results.extend(check_classroom(class_list, exclude_classroom_set, 0))
+    temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 0, excluded_path)
+    results.extend(temp_result)
+    excluded_path.extend(temp_excluded_path)
 
     sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
     print(len(sorted_results))
