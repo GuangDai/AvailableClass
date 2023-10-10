@@ -33,8 +33,8 @@ async def send_image(file_path, chat_id):
 #plt.rcParams["font.sans-serif"]=["SimHei"]
 #plt.rcParams["axes.unicode_minus"]=False
 
-login_url = 'http://jwglweixin.bupt.edu.cn/bjyddx/login'
-get_empty_classroom_url = 'http://jwglweixin.bupt.edu.cn/bjyddx/todayClassrooms?campusId=0'
+login_url = 'https://jwglweixin.bupt.edu.cn/bjyddx/login'
+get_empty_classroom_url = 'https://jwglweixin.bupt.edu.cn/bjyddx/todayClassrooms?campusId=0'
 
 userNo = os.getenv('USER_NO')
 encoded_pwd = os.getenv('ENCODED_PWD')
