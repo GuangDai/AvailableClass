@@ -340,7 +340,6 @@ def check_classroom(classrooms_list, exclude_set, num_building):
     for i in class_list:
         temp_list = []
         for j in i:
-
             temp = int(j.split("教")[1].replace("-", ""))
             if temp in exclude_set:
                 continue
@@ -359,10 +358,7 @@ def check_classroom(classrooms_list, exclude_set, num_building):
             temp_list.append(3999)
         class_list_to_num.append(temp_list)
     colors = class_list_to_num
-
-    min_cost, color_path = min_cost_with_path(n, colors)
     result = []
-    result.append([min_cost,num_to_class(color_path)])
     excluded_path = []
     for i in range(1, 8192):
         for j in colors:
@@ -443,21 +439,13 @@ if __name__ == "__main__":
     exclude_classroom_set = {4414, 4421}
     results = []
 
-    try:
-        results.extend(check_classroom(class_list, exclude_classroom_set, 3))
-    except TypeError:
-        pass
 
-    try:
-        results.extend(check_classroom(class_list, exclude_classroom_set, 4))
-    except TypeError:
-        pass
-        # print("教四不行\n")
+    results.extend(check_classroom(class_list, exclude_classroom_set, 3))
 
-    try:
-        results.extend(check_classroom(class_list, exclude_classroom_set, 0))
-    except TypeError:
-        pass
+    results.extend(check_classroom(class_list, exclude_classroom_set, 4))
+
+    results.extend(check_classroom(class_list, exclude_classroom_set, 0))
+
     sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
     print(len(sorted_results))
     sorted_results = list(reversed(sorted_results))[0:min(70,len(sorted_results)-1)]
