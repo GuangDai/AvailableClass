@@ -3,6 +3,7 @@ name: Run Python Script
 on:
   schedule:
     - cron: '10 16 * * *'
+  workflow_dispatch:
 
 jobs:
   run-script:
