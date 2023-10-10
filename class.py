@@ -311,7 +311,7 @@ if __name__ == "__main__":
         for room, _ in time_slot:
             if ("教3" in room or "教4" in room) and "教室" in type_map[room]:
                 class_time_slot.append(room.replace("教",""))
-        class_list.append(class_time_slot)    print("Collect Info Done")
+        class_list.append(class_time_slot)
     
     print("Collect Info Done")
     exclude_classroom_set = {4414, 4421}
