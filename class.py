@@ -1,18 +1,12 @@
-from datetime import datetime
-import json
 import requests
-import time
-import re
-import copy
-from sanic.log import logger
 import matplotlib.pyplot as plt
-import numpy as np
 import os
 from telegram import Bot
 import asyncio
 import random
 # 填入你的 Telegram Bot 的访问令牌
 TOKEN = os.getenv('TELEGRAM_TOKEN')
+chatId = os.getenv('CHAT_ID')
 
 # 创建 Telegram Bot 实例
 bot = Bot(TOKEN)
@@ -28,147 +22,6 @@ async def send_image(file_path, chat_id):
         await bot.send_document(chat_id, file)
     
     return True
-
-# 使用 send_image 函数发送文件
-#plt.rcParams["font.sans-serif"]=["SimHei"]
-#plt.rcParams["axes.unicode_minus"]=False
-
-login_url = 'https://jwglweixin.bupt.edu.cn/bjyddx/login'
-get_empty_classroom_url = 'https://jwglweixin.bupt.edu.cn/bjyddx/todayClassrooms?campusId=0'
-
-userNo = os.getenv('USER_NO')
-encoded_pwd = os.getenv('ENCODED_PWD')
-chatId = os.getenv('CHAT_ID')
-token = None
-
-
-def login():
-    data = {
-        'userNo': userNo,
-        'pwd': encoded_pwd,
-        'encode': '1',
-        'captchaData': '',
-        'codeVal': ''
-    }
-    patience = 30
-    while patience>0:
-        try:
-            r = requests.post(login_url, data=data,timeout=10)
-            if r.status_code == 200 and r.json()['code'] == '1':
-                global token
-                token = r.json()['data']['token']
-                return True
-        except:
-            patience -= 1
-            continue
-    return False
-
-
-def get_empty_classroom(id):
-    header = {
-        'token': token
-    }
-    patience = 30
-    while patience >0:
-        try:
-            r = requests.get(get_empty_classroom_url + str(id), headers=header)
-            if r.status_code == 200 and r.json()['code'] == '1':
-                return r.json()['data']
-        except:
-            patience -= 1
-            continue
-    return []
-
-
-def check():
-    if login():
-        empty_classroom = get_empty_classroom(1)
-        class_list = []
-        for each_class in empty_classroom:
-            classroom_list = []
-            class_room_raw = each_class['CLASSROOMS'].split(',')
-            for each_room in class_room_raw:
-                room_info = []
-                room_info.append(
-                    each_room.split('(')[0].replace(
-                        '1-', '教1-').replace('2-', '教2-').replace('3-', '教3-').replace('4-', '教4-').replace(
-                        '图书馆', '图书馆-'))
-                room_info.append(each_room.split('(')[1].replace(')', ''))
-                classroom_list.append(room_info)
-            class_list.append(classroom_list)
-
-        ans = {
-            '1': copy.deepcopy(class_list)
-        }
-
-        empty_classroom = get_empty_classroom(4)
-        class_list = []
-        for each_class in empty_classroom:
-            classroom_list = []
-            class_room_raw = each_class['CLASSROOMS'].split(',')
-            for each_room in class_room_raw:
-                room_info = []
-                room_info.append(
-                    re.sub(r'^([S|N])(\d+)$', r'\1-\2', each_room.split('(')[0]))
-                room_info.append(each_room.split('(')[1].replace(')', ''))
-                classroom_list.append(room_info)
-            class_list.append(classroom_list)
-        ans['2'] = copy.deepcopy(class_list)
-
-        ans['type_map'] = {}
-
-        with open('classTable/config.json') as f:
-            config = json.load(f)
-        startWeek = config['startWeek']  # 2023-02-20
-        nowWeek = int((datetime.now().timestamp(
-        ) - datetime.strptime(startWeek, '%Y-%m-%d').timestamp()) / 604800) + 1
-        today = datetime.now().weekday()
-
-        with open('classTable/西土城路校区.json') as f:
-            class_table = json.load(f)
-
-        ans['type_map'] = class_table['typeMap']
-
-        for class_list in class_table['class']:
-            for each_classtime in range(14):
-                if nowWeek not in class_list['classes'][each_classtime][today]:
-                    ans['1'][each_classtime].append(
-                        [class_list['name'], class_list['seat']])
-        with open('classTable/沙河校区.json') as f:
-            class_table = json.load(f)
-
-        ans['type_map'].update(class_table['typeMap'])
-
-        for class_list in class_table['class']:
-            for each_classtime in range(14):
-                if nowWeek not in class_list['classes'][each_classtime][today]:
-                    ans['2'][each_classtime].append(
-                        [class_list['name'], class_list['seat']])
-
-        with open('class_room_list_in.json', 'w') as f:
-            json.dump({
-                'class_list': ans,
-                'date': time.strftime('%Y-%m-%d %H时', time.localtime(time.time())),
-                'time': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + str(time.time() % 1)[1:5]
-            }, f, ensure_ascii=False)
-
-        old_school = []
-        for old_school_time_slot in ans["1"]:
-            temp_list = []
-            for class_room, seat_num in old_school_time_slot:
-                try:
-                    if "教室" not in ans["type_map"][class_room]:
-                        continue
-                except KeyError:
-                    pass
-                if "教3" in class_room or "教4" in class_room:
-                    temp_list.append(class_room)
-            old_school.append(temp_list)
-        return old_school
-
-    else:
-        print('login failed')
-        logger.error('login failed')
 
 
 def min_cost_with_path(n, colors):
@@ -352,7 +205,7 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
     for i in class_list:
         temp_list = []
         for j in i:
-            temp = int(j.split("教")[1].replace("-", ""))
+            temp = int(j.replace("-", ""))
             if temp in exclude_set:
                 continue
             if num_building == 4 and ((temp // 1000) % 10) == num_building:
@@ -449,7 +302,17 @@ def generate_image(data):
 
 
 if __name__ == "__main__":
-    class_list = check()
+    r = requests.get("https://ec.jray.xyz/api").json()
+    class_dict = r["class_list"]["1"]
+    type_map = r["class_list"]["type_map"]
+    class_list = []
+    for time_slot in class_dict:
+        class_time_slot = []
+        for room, _ in time_slot:
+            if ("教3" in room or "教4" in room) and "教室" in type_map[room]:
+                class_time_slot.append(room.replace("教",""))
+        class_list.append(class_time_slot)    print("Collect Info Done")
+    
     print("Collect Info Done")
     exclude_classroom_set = {4414, 4421}
     results = []
