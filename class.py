@@ -50,11 +50,17 @@ def login():
         'captchaData': '',
         'codeVal': ''
     }
-    r = requests.post(login_url, data=data)
-    if r.status_code == 200 and r.json()['code'] == '1':
-        global token
-        token = r.json()['data']['token']
-        return True
+    patience = 30
+    while patience>0:
+        try:
+            r = requests.post(login_url, data=data,timeout=10)
+            if r.status_code == 200 and r.json()['code'] == '1':
+                global token
+                token = r.json()['data']['token']
+                return True
+        except:
+            patience -= 1
+            continue
     return False
 
 
@@ -62,9 +68,15 @@ def get_empty_classroom(id):
     header = {
         'token': token
     }
-    r = requests.get(get_empty_classroom_url + str(id), headers=header)
-    if r.status_code == 200 and r.json()['code'] == '1':
-        return r.json()['data']
+    patience = 30
+    while patience >0:
+        try:
+            r = requests.get(get_empty_classroom_url + str(id), headers=header)
+            if r.status_code == 200 and r.json()['code'] == '1':
+                return r.json()['data']
+        except:
+            patience -= 1
+            continue
     return []
 
 
