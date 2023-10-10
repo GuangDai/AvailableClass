@@ -228,7 +228,7 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
     result = []
     result.append([min_cost,num_to_class(color_path)])
     
-    for i in range(1, 8192):
+    for i in range(1, 2048):
         for j in colors:
             random.shuffle(j)
         try:
