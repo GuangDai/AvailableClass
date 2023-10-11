@@ -58,53 +58,6 @@ def min_cost_with_path(n, colors):
     return min_cost, color_path
 
 
-def second_best_solution(n, colors):
-    m = max(len(c) for c in colors)
-    INF = float('inf')
-
-    # 初始化 dp 和 path 数组
-    dp = [[INF] * m for _ in range(n)]
-    path = [[-1] * m for _ in range(n)]
-
-    for j in range(len(colors[0])):
-        dp[0][j] = 0
-
-    # 动态规划找到最优解
-    for i in range(1, n):
-        for j in range(len(colors[i])):
-            for k in range(len(colors[i - 1])):
-                cost = calculate_cost(colors[i][j], colors[i - 1][k])
-                # cost = 1 if colors[i][j] != colors[i - 1][k] else 0
-                if dp[i][j] > dp[i - 1][k] + cost:
-                    dp[i][j] = dp[i - 1][k] + cost
-                    path[i][j] = k
-
-    # 回溯找到最优路径
-    best_cost = min(dp[-1])
-    best_index = dp[-1].index(best_cost)
-    best_path = [0] * n
-    best_path[-1] = colors[-1][best_index]
-    for i in range(n - 1, 0, -1):
-        best_index = path[i][best_index]
-        best_path[i - 1] = colors[i - 1][best_index]
-
-    # 对于每一步，尝试改变一个颜色选择
-    second_best_cost = INF
-    second_best_path = None
-    for i in range(n):
-        for j in colors[i]:
-            if j != best_path[i]:
-                temp_path = best_path.copy()
-                temp_path[i] = j
-                temp_cost = sum(calculate_cost(temp_path[k], temp_path[k - 1]) for k in range(1, n) if
-                                temp_path[k] != temp_path[k - 1])
-                if temp_cost < second_best_cost:
-                    second_best_cost = temp_cost
-                    second_best_path = temp_path
-
-    return second_best_cost, second_best_path
-
-
 def second_best_solution_with_exclusion(n, colors, excluded_path):
     m = max(len(c) for c in colors)
     INF = float('inf')
