@@ -224,7 +224,7 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
         class_list_to_num.append(temp_list)
     colors = class_list_to_num
     result = []
-    for i in range(100):
+    for i in range(500):
         for j in colors:
             random.shuffle(j)
             
