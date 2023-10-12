@@ -349,7 +349,7 @@ if __name__ == "__main__":
         results = []
         excluded_path = []
         class_list = ClassList[time_index:]
-        exclude_classroom_set = ExcludeClassroomSet
+        exclude_classroom_set = {4414, 4421}
         for n_building in [3, 4, 0]:
             temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, n_building, excluded_path)
             results.extend(temp_result)
@@ -363,7 +363,7 @@ if __name__ == "__main__":
         for exclude_room in frequent_class:
             results = []
             excluded_path = []
-            exclude_classroom_set = ExcludeClassroomSet
+            exclude_classroom_set = {4414, 4421}
             exclude_classroom_set.add(int(exclude_room.replace("-","")))
             for n_building in [3, 4, 0]:
                 temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, n_building,
