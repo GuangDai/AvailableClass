@@ -27,7 +27,7 @@ def send_image(file_path, chat_id):
 
     # 发送文件
     with open(file_path, 'rb') as file:
-        bot.send_document(chat_id, file)  # 假设 `bot.send_document` 也是同步方法
+        await bot.send_document(chat_id, file)  # 假设 `bot.send_document` 也是同步方法
 
     return True
 
