@@ -217,16 +217,14 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
         class_list_to_num.append(temp_list)
     colors = class_list_to_num
     result = []
-    for i in range(500):
-        for j in colors:
-            random.shuffle(j)
+    for i in range(300):
+        random.shuffle(colors[0])
 
         min_cost, color_path = min_cost_with_path(n, colors)
         result.append([min_cost, num_to_class(color_path)])
 
-    for i in range(1, 2048):
-        for j in colors:
-            random.shuffle(j)
+    for i in range(1, 512):
+        random.shuffle(colors[0])
         try:
             second_best_cost, color_path = second_best_solution_with_exclusion(n, colors, excluded_path)
             excluded_path.append(color_path)
@@ -333,12 +331,11 @@ def get_class():
 if __name__ == "__main__":
     ClassList = get_class()
     frequent_class = count_empty_classrooms(ClassList)
-
     print("Collect Info Done")
     ExcludeClassroomSet = {4414, 4421}
-    results = []
-    excluded_path = []
     for time_index in range(14):
+        results = []
+        excluded_path = []
         class_list = ClassList[time_index:]
         exclude_classroom_set = ExcludeClassroomSet
         for n_building in [3, 4, 0]:
