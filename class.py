@@ -356,7 +356,7 @@ if __name__ == "__main__":
             results.extend(temp_result)
             excluded_path.extend(temp_excluded_path)
         sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
-        mini_sort_cost = sorted_results[0][0]
+        mini_sort_cost = sorted_results[-1][0]
         sorted_results = list(reversed(sorted_results))[0:min(30, len(sorted_results) - 1)]
         generate_image(sorted_results, f"{time_data[time_index].replace(':','：')}_{mini_sort_cost}")
         send_image(f"./{time_data[time_index].replace(':','：')}_{mini_sort_cost}.png", chatId)
@@ -375,7 +375,7 @@ if __name__ == "__main__":
                 results.extend(temp_result)
                 excluded_path.extend(temp_excluded_path)
             sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
-            mini_sort_cost = sorted_results[0][0]
+            mini_sort_cost = sorted_results[-1][0]
             sorted_results = list(reversed(sorted_results))[0:min(30, len(sorted_results) - 1)]
             generate_image(sorted_results, f"{time_data[time_index].replace(':','：')}_{exclude_room}_{mini_sort_cost}")
             send_image(f"./{time_data[time_index].replace(':','：')}_{exclude_room}_{mini_sort_cost}.png", chatId)
