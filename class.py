@@ -315,7 +315,7 @@ def count_empty_classrooms(classrooms_list):
                 count_dict[classroom] = 1
 
     # 从字典中筛选出出现次数大于2的教室
-    frequent_classrooms = [classroom for classroom, count in count_dict.items() if count > 2]
+    frequent_classrooms = [classroom for classroom, count in count_dict.items() if count > 4]
 
     return frequent_classrooms
 
