@@ -20,14 +20,14 @@ bot = Bot(TOKEN)
 
 
 # 用于发送文件的函数
-async def send_image(file_path, chat_id):
+def send_image(file_path, chat_id):
     # 确保文件存在
     if not os.path.exists(file_path):
         return False
 
     # 发送文件
     with open(file_path, 'rb') as file:
-        await bot.send_document(chat_id, file)
+        bot.send_document(chat_id, file)  # 假设 `bot.send_document` 也是同步方法
 
     return True
 
@@ -345,9 +345,7 @@ if __name__ == "__main__":
         sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
         sorted_results = list(reversed(sorted_results))[0:min(70, len(sorted_results) - 1)]
         generate_image(sorted_results, f"{time_data[time_index]}")
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(send_image(f'./{time_data[time_index]}.png', chatId))
-        loop.close()
+        send_image(f'./{time_data[time_index]}.png', chatId)
         for exclude_room in frequent_class:
             exclude_classroom_set = ExcludeClassroomSet
             exclude_classroom_set.add(int(exclude_room.replace("-","")))
@@ -359,6 +357,4 @@ if __name__ == "__main__":
             sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
             sorted_results = list(reversed(sorted_results))[0:min(70, len(sorted_results) - 1)]
             generate_image(sorted_results, f"{time_data[time_index]}_{exclude_room}")
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(send_image(f'./{time_data[time_index]}_{exclude_room}.png', chatId))
-            loop.close()
+            send_image(f'./{time_data[time_index]}_{exclude_room}.png', chatId)
