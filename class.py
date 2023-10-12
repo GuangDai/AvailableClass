@@ -294,7 +294,10 @@ def generate_image(data, name):
     plt.subplots_adjust(hspace=0.05)
     # 保存图片
     plt.savefig(f"{name}.png", dpi=300, bbox_inches='tight', pad_inches=0.0)
-
+    try:
+        plt.close()  # 关闭当前图形
+    except:
+        pass
 
 
 def count_empty_classrooms(classrooms_list):
