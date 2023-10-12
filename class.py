@@ -343,6 +343,7 @@ if __name__ == "__main__":
     gc.enable()
     ClassList = get_class()
     frequent_class = count_empty_classrooms(ClassList)
+    frequent_class = sorted(frequent_class)
     print("Collect Info Done")
     ExcludeClassroomSet = {4414, 4421}
     for time_index in range(14):
