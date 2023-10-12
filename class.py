@@ -344,8 +344,8 @@ if __name__ == "__main__":
             results.extend(temp_result)
             excluded_path.extend(temp_excluded_path)
         sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
-        sorted_results = list(reversed(sorted_results))[0:min(70, len(sorted_results) - 1)]
-        generate_image(sorted_results, f"{time_data[time_index]}")
+        sorted_results = list(reversed(sorted_results))[0:min(30, len(sorted_results) - 1)]
+        generate_image(sorted_results, f"{time_data[time_index].split("-")[0].replace(":","-")}")
         send_image(f'./{time_data[time_index]}.png', chatId)
         for exclude_room in frequent_class:
             results = []
