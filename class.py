@@ -30,6 +30,7 @@ def send_image(file_path, chat_id):
 
     # 发送文件
     with open(file_path, 'rb') as file:
+        print("Send!")
         bot.send_document(chat_id, file)  # 假设 `bot.send_document` 也是同步方法
     return True
 
@@ -293,7 +294,7 @@ def generate_image(data, name):
     plt.subplots_adjust(hspace=0.05)
     # 保存图片
     plt.savefig(f"{name}.png", dpi=300, bbox_inches='tight', pad_inches=0.0)
-    plt.show()
+
 
 
 def count_empty_classrooms(classrooms_list):
@@ -353,7 +354,7 @@ if __name__ == "__main__":
         sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
         sorted_results = list(reversed(sorted_results))[0:min(30, len(sorted_results) - 1)]
         generate_image(sorted_results, f"{time_data[time_index].replace(':','：')}")
-        send_image(f'./{time_data[time_index]}.png', chatId)
+        send_image(f"./{time_data[time_index].replace(':','：')}.png", chatId)
         del sorted_results, temp_result, temp_excluded_path
         gc.collect()
         for exclude_room in frequent_class:
@@ -369,5 +370,5 @@ if __name__ == "__main__":
             sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
             sorted_results = list(reversed(sorted_results))[0:min(30, len(sorted_results) - 1)]
             generate_image(sorted_results, f"{time_data[time_index].replace(':','：')}_{exclude_room}")
-            send_image(f'./{time_data[time_index]}_{exclude_room}.png', chatId)
+            send_image(f"./{time_data[time_index].replace(':','：')}_{exclude_room}.png", chatId)
             gc.collect()
