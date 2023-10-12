@@ -33,8 +33,13 @@ def send_image(file_path, chat_id):
         with open(file_path, 'rb') as file:
             await bot.send_document(chat_id, file)
 
-    # 在同步函数中运行异步函数
-    asyncio.run(send_file_async(file_path, chat_id))
+    # 创建并管理事件循环
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(send_file_async(file_path, chat_id))
+    finally:
+        loop.close()
 
     return True
 
