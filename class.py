@@ -220,14 +220,14 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
         class_list_to_num.append(temp_list)
     colors = class_list_to_num
     result = []
-    for i in range(500):
+    for i in range(256):
         for j in colors:
             random.shuffle(j)
             
         min_cost, color_path = min_cost_with_path(n, colors)
         result.append([min_cost,num_to_class(color_path)])
     
-    for i in range(1, 2048):
+    for i in range(1, 512):
         for j in colors:
             random.shuffle(j)
         try:
@@ -275,7 +275,7 @@ def draw_table(ax, data, start_col):
     ax.table(cellText=table_data, cellLoc='center', cellColours=cell_colors, colWidths=[0.1]* (N+1), bbox=[0, 0, 1, 1])
     ax.set_position([0.0, 0.0, 1.0, 1.0])
 
-def generate_image(data):
+def generate_image(data,name):
     # 获取数据的维度
     num_blocks = (len(data) + 9) // 10  # 计算需要多少块
     fig, axes = plt.subplots(num_blocks, 1, figsize=(10, 6*num_blocks))
@@ -293,7 +293,7 @@ def generate_image(data):
 
     plt.subplots_adjust(hspace=0.05)
     # 保存图片
-    plt.savefig("output_image.png", dpi=300, bbox_inches='tight', pad_inches=0.0)
+    plt.savefig(f"{name}.png", dpi=300, bbox_inches='tight', pad_inches=0.0)
     plt.show()
 
 
@@ -308,33 +308,37 @@ if __name__ == "__main__":
             if ("教3" in room or "教4" in room or "教2" in room) and "教室" in type_map[room]:
                 class_time_slot.append(room.replace("教",""))
         class_list.append(class_time_slot)
-    class_list = class_list[find_time_interval_index():]
-
-    print("Collect Info Done")
-    exclude_classroom_set = {4414, 4421, 4412}
-    results = []
-    excluded_path = []
-
-    temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 2, excluded_path)
-    results.extend(temp_result)
-    excluded_path.extend(temp_excluded_path)
-
-    temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 3, excluded_path)
-    results.extend(temp_result)
-    excluded_path.extend(temp_excluded_path)
+    CLASS_LIST = class_list
+    EXCLUDE_SET = {4414, 4421}
+    for i in range(0,13):
+      class_list = class_list[i:]
+      print("Collect Info Done")
+      for j in class_list[0]:
+        exclude_classroom_set = EXCLUDE_SET
+        exclude_classroom_set.add(int(j.replace("-","")))
+        results = []
+        excluded_path = []
+        temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 2, excluded_path)
+        results.extend(temp_result)
+        excluded_path.extend(temp_excluded_path)
     
-    temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 4, excluded_path)
-    results.extend(temp_result)
-    excluded_path.extend(temp_excluded_path)
-
-    temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 0, excluded_path)
-    results.extend(temp_result)
-    excluded_path.extend(temp_excluded_path)
-
-    sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
-    print(len(sorted_results))
-    sorted_results = list(reversed(sorted_results))[0:min(70,len(sorted_results)-1)]
-    generate_image(sorted_results)
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(send_image('./output_image.png', chatId))
-    loop.close()
+        temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 3, excluded_path)
+        results.extend(temp_result)
+        excluded_path.extend(temp_excluded_path)
+        
+        temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 4, excluded_path)
+        results.extend(temp_result)
+        excluded_path.extend(temp_excluded_path)
+    
+        temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 0, excluded_path)
+        results.extend(temp_result)
+        excluded_path.extend(temp_excluded_path)
+    
+        sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
+        print(len(sorted_results))
+        sorted_results = list(reversed(sorted_results))[0:min(30,len(sorted_results)-1)]
+        generate_image(sorted_results,f"Excluded{j}_{time_data[i]}")
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(send_image(f'./Excluded{j}_{time_data[i]}.png', chatId))
+        loop.close()
+        os.remove(f"./Excluded{j}_{time_data[i]}.png")
