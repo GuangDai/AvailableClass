@@ -31,7 +31,10 @@ def send_image(file_path, chat_id):
     # 定义一个异步函数来发送文件
     async def send_file_async(file_path, chat_id):
         with open(file_path, 'rb') as file:
-            await bot.send_document(chat_id, file)
+            try:
+                await bot.send_document(chat_id, file)
+            except:
+                pass
 
     # 创建并管理事件循环
     loop = asyncio.new_event_loop()
