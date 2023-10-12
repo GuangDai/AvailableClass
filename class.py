@@ -224,7 +224,7 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
         min_cost, color_path = min_cost_with_path(n, colors)
         result.append([min_cost, num_to_class(color_path)])
 
-    for i in range(1, 512):
+    for i in range(1, 300):
         random.shuffle(colors[0])
         try:
             second_best_cost, color_path = second_best_solution_with_exclusion(n, colors, excluded_path)
