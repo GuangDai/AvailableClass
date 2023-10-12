@@ -348,6 +348,8 @@ if __name__ == "__main__":
         generate_image(sorted_results, f"{time_data[time_index]}")
         send_image(f'./{time_data[time_index]}.png', chatId)
         for exclude_room in frequent_class:
+            results = []
+            excluded_path = []
             exclude_classroom_set = ExcludeClassroomSet
             exclude_classroom_set.add(int(exclude_room.replace("-","")))
             for n_building in [3, 4, 0]:
@@ -356,6 +358,6 @@ if __name__ == "__main__":
                 results.extend(temp_result)
                 excluded_path.extend(temp_excluded_path)
             sorted_results = sorted(remove_duplicates(results), key=lambda x: x[0], reverse=True)
-            sorted_results = list(reversed(sorted_results))[0:min(70, len(sorted_results) - 1)]
-            generate_image(sorted_results, f"{time_data[time_index]}_{exclude_room}")
+            sorted_results = list(reversed(sorted_results))[0:min(30, len(sorted_results) - 1)]
+            generate_image(sorted_results, f"{time_data[time_index].split("-")[0].replace(":","-")}_{exclude_room}")
             send_image(f'./{time_data[time_index]}_{exclude_room}.png', chatId)
