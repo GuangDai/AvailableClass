@@ -5,7 +5,7 @@ from telegram import Bot
 import random
 from datetime import datetime, timedelta, timezone
 import time
-
+import gc
 
 time_data = ["08:00-08:45", "08:50-09:35", "09:50-10:35",
              "10:40-11:25", "11:30-12:15", "13:00-13:45",
@@ -31,7 +31,6 @@ def send_image(file_path, chat_id):
     # 发送文件
     with open(file_path, 'rb') as file:
         bot.send_document(chat_id, file)  # 假设 `bot.send_document` 也是同步方法
-
     return True
 
 
@@ -337,6 +336,7 @@ def get_class():
 
 
 if __name__ == "__main__":
+    gc.enable()
     ClassList = get_class()
     frequent_class = count_empty_classrooms(ClassList)
     print("Collect Info Done")
@@ -354,6 +354,8 @@ if __name__ == "__main__":
         sorted_results = list(reversed(sorted_results))[0:min(30, len(sorted_results) - 1)]
         generate_image(sorted_results, f"{time_data[time_index].replace(':','：')}")
         send_image(f'./{time_data[time_index]}.png', chatId)
+        del sorted_results, temp_result, temp_excluded_path
+        gc.collect()
         for exclude_room in frequent_class:
             results = []
             excluded_path = []
@@ -368,3 +370,4 @@ if __name__ == "__main__":
             sorted_results = list(reversed(sorted_results))[0:min(30, len(sorted_results) - 1)]
             generate_image(sorted_results, f"{time_data[time_index].replace(':','：')}_{exclude_room}")
             send_image(f'./{time_data[time_index]}_{exclude_room}.png', chatId)
+            gc.collect()
