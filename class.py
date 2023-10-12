@@ -346,7 +346,7 @@ if __name__ == "__main__":
     frequent_class = sorted(frequent_class)
     print("Collect Info Done")
     ExcludeClassroomSet = {4414, 4421}
-    for time_index in range(14):
+    for time_index in range(13):
         results = []
         excluded_path = []
         class_list = ClassList[time_index:]
@@ -362,6 +362,8 @@ if __name__ == "__main__":
         del sorted_results, temp_result, temp_excluded_path
         gc.collect()
         for exclude_room in frequent_class:
+            if exclude_room not in class_list[0]:
+                continue
             results = []
             excluded_path = []
             exclude_classroom_set = {4414, 4421}
