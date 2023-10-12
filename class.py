@@ -4,6 +4,8 @@ import os
 from telegram import Bot
 import random
 from datetime import datetime, timedelta, timezone
+import time
+
 
 time_data = ["08:00-08:45", "08:50-09:35", "09:50-10:35",
              "10:40-11:25", "11:30-12:15", "13:00-13:45",
@@ -316,17 +318,22 @@ def count_empty_classrooms(classrooms_list):
 
 
 def get_class():
-    r = requests.get("https://ec.jray.xyz/api").json()
-    class_dict = r["class_list"]["1"]
-    type_map = r["class_list"]["type_map"]
-    total_class_list = []
-    for time_slot in class_dict:
-        class_time_slot = []
-        for room, _ in time_slot:
-            if ("教3" in room or "教4" in room) and "教室" in type_map[room]:
-                class_time_slot.append(room.replace("教", ""))
-        total_class_list.append(class_time_slot)
-    return total_class_list
+    while True:
+        try:
+            r = requests.get("https://ec.jray.xyz/api").json()
+            class_dict = r["class_list"]["1"]
+            type_map = r["class_list"]["type_map"]
+            total_class_list = []
+            for time_slot in class_dict:
+                class_time_slot = []
+                for room, _ in time_slot:
+                    if ("教3" in room or "教4" in room) and "教室" in type_map[room]:
+                        class_time_slot.append(room.replace("教", ""))
+                total_class_list.append(class_time_slot)
+            return total_class_list
+        except:
+            time.sleep(2)
+            continue
 
 
 if __name__ == "__main__":
