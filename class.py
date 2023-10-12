@@ -20,14 +20,21 @@ bot = Bot(TOKEN)
 
 
 # 用于发送文件的函数
+import os
+import asyncio
+
 def send_image(file_path, chat_id):
     # 确保文件存在
     if not os.path.exists(file_path):
         return False
 
-    # 发送文件
-    with open(file_path, 'rb') as file:
-        await bot.send_document(chat_id, file)  # 假设 `bot.send_document` 也是同步方法
+    # 定义一个异步函数来发送文件
+    async def send_file_async(file_path, chat_id):
+        with open(file_path, 'rb') as file:
+            await bot.send_document(chat_id, file)
+
+    # 在同步函数中运行异步函数
+    asyncio.run(send_file_async(file_path, chat_id))
 
     return True
 
