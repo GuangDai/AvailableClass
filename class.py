@@ -4,6 +4,13 @@ import os
 from telegram import Bot
 import asyncio
 import random
+from datetime import datetime, timedelta, timezone
+
+time_data = ["08:00-08:45", "08:50-09:35", "09:50-10:35",
+             "10:40-11:25", "11:30-12:15", "13:00-13:45",
+             "13:50-14:35", "14:45-15:30", "15:40-16:25",
+             "16:35-17:20", "17:25-18:10", "18:30-19:15",
+             "19:20-20:05", "20:10-20:55"]
 # 填入你的 Telegram Bot 的访问令牌
 TOKEN = os.getenv('TELEGRAM_TOKEN')
 chatId = os.getenv('CHAT_ID')
@@ -22,6 +29,38 @@ async def send_image(file_path, chat_id):
         await bot.send_document(chat_id, file)
     
     return True
+
+
+def get_current_time_in_utc8():
+    # 获取当前UTC时间
+    utc_time = datetime.utcnow()
+
+    # 将UTC时间转换为UTC+8时间
+    utc8_time = utc_time + timedelta(hours=8)
+
+    return utc8_time
+
+
+def find_time_interval_index():
+    # 获取当前UTC+8时间
+    current_time = get_current_time_in_utc8()
+
+    # 提取时间部分 (HH:MM)
+    current_time_str = current_time.strftime('%H:%M')
+
+    # 遍历时间数据
+    for i in range(len(time_data)):
+        start_time, end_time = time_data[i].split('-')
+        if start_time <= current_time_str <= end_time:
+            return i
+
+        if i + 1 < len(time_data) and current_time_str < time_data[i + 1].split('-')[0]:
+            return i + 1
+
+    if current_time_str < time_data[0].split('-')[0]:
+        return 0
+    else:
+        return -1
 
 
 def min_cost_with_path(n, colors):
@@ -167,6 +206,9 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
             elif num_building == 3 and ((temp // 1000) % 10) == num_building:
                 temp_list.append(temp)
                 continue
+            elif num_building == 2 and ((temp // 1000) % 10 ) == num_building:
+                temp_list.append(temp)
+                continue
             elif num_building == 0:
                 temp_list.append(temp)
                 continue
@@ -174,6 +216,7 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
             temp_list.append(9999)
             temp_list.append(4999)
             temp_list.append(3999)
+            temp_list.append(2999)
         class_list_to_num.append(temp_list)
     colors = class_list_to_num
     result = []
@@ -214,10 +257,7 @@ def draw_table(ax, data, start_col):
                  "10:40-11:25","11:30-12:15","13:00-13:45",
                  "13:50-14:35","14:45-15:30","15:40-16:25",
                  "16:35-17:20","17:25-18:10","18:30-19:15",
-                 "19:20-20:05","20:10-20:55"]
-    # 确保每个数据都有13个字符串
-    assert M == 14, "每个数据应该有14个字符串"
-
+                 "19:20-20:05","20:10-20:55"][-1*M:]
 
     # 设置坐标轴不可见
     ax.axis('off')
@@ -265,15 +305,19 @@ if __name__ == "__main__":
     for time_slot in class_dict:
         class_time_slot = []
         for room, _ in time_slot:
-            if ("教3" in room or "教4" in room) and "教室" in type_map[room]:
+            if ("教3" in room or "教4" in room or "教2" in room) and "教室" in type_map[room]:
                 class_time_slot.append(room.replace("教",""))
         class_list.append(class_time_slot)
-    
+    class_list = class_list[find_time_interval_index():]
+
     print("Collect Info Done")
-    exclude_classroom_set = {4414, 4421}
+    exclude_classroom_set = {4414, 4421, 4412}
     results = []
     excluded_path = []
 
+    temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 2, excluded_path)
+    results.extend(temp_result)
+    excluded_path.extend(temp_excluded_path)
 
     temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, 3, excluded_path)
     results.extend(temp_result)
