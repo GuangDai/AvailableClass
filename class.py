@@ -6,6 +6,7 @@ import random
 from datetime import datetime, timedelta, timezone
 import time
 import gc
+import itertools
 
 time_data = ["08:00-08:45", "08:50-09:35", "09:50-10:35",
              "10:40-11:25", "11:30-12:15", "13:00-13:45",
@@ -21,8 +22,6 @@ bot = Bot(TOKEN)
 
 
 # 用于发送文件的函数
-import os
-
 def send_image(file_path, chat_id):
     # 确保文件存在
     if not os.path.exists(file_path):
@@ -227,7 +226,7 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
         min_cost, color_path = min_cost_with_path(n, colors)
         result.append([min_cost, num_to_class(color_path)])
 
-    for i in range(1, 300):
+    for i in range(1, 100):
         for j in range(n):
             random.shuffle(colors[j])
         try:
@@ -302,6 +301,8 @@ def generate_image(data, name):
         pass
 
 
+
+
 def count_empty_classrooms(classrooms_list):
     # 初始化一个字典来统计每个教室的出现次数
     count_dict = {}
@@ -316,10 +317,41 @@ def count_empty_classrooms(classrooms_list):
             else:
                 count_dict[classroom] = 1
 
-    # 从字典中筛选出出现次数大于2的教室
-    frequent_classrooms = [classroom for classroom, count in count_dict.items() if count > 4]
+    # 按照出现次数从多到少排序
+    sorted_classrooms = sorted(count_dict.items(), key=lambda x: x[1], reverse=True)
 
-    return frequent_classrooms
+    # 获取前六个教室
+    top_six = sorted_classrooms[:6]
+
+    # 如果后续的教室出现次数与第六个教室相同，则继续添加
+    i = 6
+    while i < len(sorted_classrooms) and sorted_classrooms[i][1] == top_six[-1][1]:
+        top_six.append(sorted_classrooms[i])
+        i += 1
+
+    # 提取教室名称
+    frequent_classrooms = [classroom[0] for classroom in top_six]
+
+    # 获得各种组合的集合
+    combinations_list = []
+    for i in range(1, min(len(frequent_classrooms), 5) + 1):  # min(len(frequent_classrooms), 5) 确保在教室数量少于5时代码仍能工作
+        combinations = list(itertools.combinations(frequent_classrooms, i))
+        combinations_list.append(set(combinations))
+
+    return combinations_list
+
+
+def convert_set_to_int(classroom_set):
+    int_set = set()
+
+    for classroom in classroom_set:
+        if isinstance(classroom, tuple):  # 处理多个教室的组合
+            int_comb = tuple([int(room.replace("-", "")) for room in classroom])
+            int_set.add(int_comb)
+        else:  # 处理单个教室
+            int_set.add(int(classroom.replace("-", "")))
+
+    return int_set
 
 
 def get_class():
@@ -344,8 +376,7 @@ def get_class():
 if __name__ == "__main__":
     gc.enable()
     ClassList = get_class()
-    frequent_class = count_empty_classrooms(ClassList)
-    frequent_class = sorted(frequent_class)
+
     print("Collect Info Done")
     ExcludeClassroomSet = {4414, 4421}
     for time_index in range(13):
@@ -364,13 +395,13 @@ if __name__ == "__main__":
         send_image(f"./{time_data[time_index].replace(':','：')}_{mini_sort_cost}.png", chatId)
         del sorted_results, temp_result, temp_excluded_path
         gc.collect()
+        frequent_class = count_empty_classrooms(class_list)
         for exclude_room in frequent_class:
-            if exclude_room not in class_list[0]:
-                continue
+            int_set = convert_set_to_int(exclude_room)
             results = []
             excluded_path = []
             exclude_classroom_set = {4414, 4421}
-            exclude_classroom_set.add(int(exclude_room.replace("-","")))
+            exclude_classroom_set = exclude_classroom_set.union(int_set)
             for n_building in [3, 4, 0]:
                 temp_result, temp_excluded_path = check_classroom(class_list, exclude_classroom_set, n_building,
                                                                   excluded_path)
