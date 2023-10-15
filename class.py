@@ -226,7 +226,7 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
         min_cost, color_path = min_cost_with_path(n, colors)
         result.append([min_cost, num_to_class(color_path)])
 
-    for i in range(1, 100):
+    for i in range(1, 200):
         for j in range(n):
             random.shuffle(colors[j])
         try:
@@ -304,40 +304,34 @@ def generate_image(data, name):
 
 
 def count_empty_classrooms(classrooms_list):
-    # 初始化一个字典来统计每个教室的出现次数
     count_dict = {}
 
-    # 遍历每个时间段的空余教室列表
     for classrooms in classrooms_list:
         for classroom in classrooms:
-            # 如果教室在字典中，增加其计数
             if classroom in count_dict:
                 count_dict[classroom] += 1
-            # 否则，初始化其计数为1
             else:
                 count_dict[classroom] = 1
 
-    # 按照出现次数从多到少排序
     sorted_classrooms = sorted(count_dict.items(), key=lambda x: x[1], reverse=True)
-
-    # 获取前六个教室
     top_six = sorted_classrooms[:6]
 
-    # 如果后续的教室出现次数与第六个教室相同，则继续添加
     i = 6
-    while i < len(sorted_classrooms) and sorted_classrooms[i][1] == top_six[-1][1]:
+    while i < len(sorted_classrooms) and sorted_classrooms[i][1] == top_six[-1][1] and len(top_six) < 10 :
         top_six.append(sorted_classrooms[i])
         i += 1
 
-    # 提取教室名称
-    frequent_classrooms = [classroom[0] for classroom in top_six]
+    frequent_classrooms = {classroom[0] for classroom in top_six}
 
-    # 获得各种组合的集合
-    combinations_list = []
-    for i in range(1, min(len(frequent_classrooms), 5) + 1):  # min(len(frequent_classrooms), 5) 确保在教室数量少于5时代码仍能工作
+    combinations_tuple_list = []  # 添加单个教室的集合
+    for i in range(1, min(len(frequent_classrooms), 3) + 1):
         combinations = list(itertools.combinations(frequent_classrooms, i))
-        combinations_list.append(set(combinations))
-
+        if len(combinations) > 50 or len(combinations_tuple_list)+len(combinations)>70:
+            break
+        combinations_tuple_list.extend(combinations)
+    combinations_list = []
+    for i in combinations_tuple_list:
+        combinations_list.append(set(i))
     return combinations_list
 
 
