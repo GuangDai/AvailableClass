@@ -332,6 +332,7 @@ def count_empty_classrooms(classrooms_list):
     combinations_list = []
     for i in combinations_tuple_list:
         combinations_list.append(set(i))
+    combinations_list = sorted(combinations_list, key=lambda x: sorted(list(x)))
     return combinations_list
 
 
