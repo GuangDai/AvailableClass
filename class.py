@@ -179,7 +179,7 @@ def calculate_cost(a, b):
         return abs(a_stair - b_stair) + 1
 
     if a_room != b_room:
-        return 1
+        return 3
     else:
         return 0
 
