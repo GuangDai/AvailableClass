@@ -326,7 +326,7 @@ def count_empty_classrooms(classrooms_list):
     combinations_tuple_list = []  # 添加单个教室的集合
     for i in range(1, min(len(frequent_classrooms), 3) + 1):
         combinations = list(itertools.combinations(frequent_classrooms, i))
-        if len(combinations) > 100 or len(combinations_tuple_list)+len(combinations)>130:
+        if len(combinations) > 80 or len(combinations_tuple_list)+len(combinations)>120:
             break
         combinations_tuple_list.extend(combinations)
     combinations_list = []
