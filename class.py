@@ -219,7 +219,7 @@ def check_classroom(classrooms_list, exclude_set, num_building, excluded_path):
         class_list_to_num.append(temp_list)
     colors = class_list_to_num
     result = []
-    for i in range(300):
+    for i in range(100):
         for j in range(n):
             random.shuffle(colors[j])
 
@@ -326,7 +326,7 @@ def count_empty_classrooms(classrooms_list):
     combinations_tuple_list = []  # 添加单个教室的集合
     for i in range(1, min(len(frequent_classrooms), 3) + 1):
         combinations = list(itertools.combinations(frequent_classrooms, i))
-        if len(combinations) > 50 or len(combinations_tuple_list)+len(combinations)>70:
+        if len(combinations) > 100 or len(combinations_tuple_list)+len(combinations)>130:
             break
         combinations_tuple_list.extend(combinations)
     combinations_list = []
